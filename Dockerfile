@@ -1,4 +1,4 @@
-FROM php:8.3-cli
+FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -20,6 +20,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 RUN php artisan config:clear || true
+RUN php artisan cache:clear || true
 
 EXPOSE 10000
 

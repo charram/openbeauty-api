@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Firebase Authentication
+    |--------------------------------------------------------------------------
+    |
+    | Firebase Admin SDK service account credentials.
+    | Used to verify Firebase ID tokens from the Open Beauty Flutter app.
+    |
+    */
+
+    'firebase' => [
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
 ];

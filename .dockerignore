@@ -2,3 +2,6 @@
 .env
 vendor
 node_modules
+/storage/app/firebase/
+*.bak
+*.bak_*

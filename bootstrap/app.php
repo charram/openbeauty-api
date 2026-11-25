@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,10 +14,35 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+
+        // API ไม่ต้อง Redirect ไปหน้า login
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => $request->is('api/*')
+                ? null
+                : '/login'
+        );
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+
+        // API ต้องตอบกลับ JSON เสมอ
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request, \Throwable $e): bool =>
+                $request->is('api/*') || $request->expectsJson(),
         );
+
+        // ไม่มี Sanctum Token ให้ตอบ HTTP 401
+        $exceptions->render(
+            function (AuthenticationException $e, Request $request) {
+
+                if ($request->is('api/*')) {
+                    return response()->json([
+                        'message' => 'Unauthenticated.',
+                    ], 401);
+                }
+
+                return null;
+            }
+        );
+
     })->create();
